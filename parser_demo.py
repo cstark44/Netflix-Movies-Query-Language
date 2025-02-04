@@ -62,18 +62,39 @@ def get_records(column: list[str], operation: list[str], condition: list[str], l
 
 phrase = "genre of Dinosaur Planet and release date of Dinosaur Planet" # and directed by Greta Gerwig"
 
+
+#keywords involing title input
+info = CaselessKeyword("info about")
+director_of = CaselessKeyword("director of")
+cast = CaselessKeyword("cast of")
+duration_of = CaselessKeyword("duration of")
+rating_of = CaselessKeyword("rating of")
+release_date = CaselessKeyword("release date of")
+movie_called = CaselessKeyword("movie called")
+genre_of = CaselessKeyword("genre of")
+
+#keywords involving rating
+rated_below = CaselessKeyword("rated below")
+rated_above = CaselessKeyword("rated above")
+
+#keywords for runtime
 shorter_than = CaselessKeyword("shorter than")
 longer_than = CaselessKeyword("longer than")
+
+#keywords for release date
+released_in = CaselessKeyword("released in")
 released_before = CaselessKeyword("released before")
+released_after = CaselessKeyword("released after")
+
+#keywords for specific attributes
 starring = CaselessKeyword("starring")
-movie_called = CaselessKeyword("movie called")
 directed_by = CaselessKeyword("directed by")
-genre_of = CaselessKeyword("genre of")
 genre_with = CaselessKeyword("with genre")
-release_date = CaselessKeyword("release date of")
 
 
-keywords = (shorter_than | longer_than | released_before | starring | movie_called | directed_by | genre_of | genre_with | release_date)
+keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
+            | rated_below | rated_above | shorter_than | longer_than | released_in | released_before 
+            | released_after | starring | directed_by | genre_with)
 
 split_queries = phrase.split("and")
 
