@@ -40,152 +40,174 @@ released in *year*
 )
 '''
 
-def get_records(column: list[str], operation: list[str], condition: list[str], list_all: list[str]):
+def get_records(column: list[str], operation: list[str], condition: list[str], return_col: list[str]):
+    print("_______ GETTING RECORDS _______")
+    print(column, operation, condition, return_cols)
     to_db_col_name = {
         'movie_title' : 'title',
         'director' : 'director',
         'genre' : 'genre',
-        'released' : 'year'
+        'release_date' : 'year',
+        'rating' : 'rating',
+        'runtime' : 'runtime',
+        'cast' : 'cast'
     }
     query_to_do = movies
+    # For each query joined with an 'and', add another where clause
     for i in range(len(column)):
-        query_to_do = query_to_do.where(filter=FieldFilter(to_db_col_name[column[i]], operation[i], condition[i]))
+        query_to_do = query_to_do.where(to_db_col_name[column[i]], operation[i], condition[i])
 
-    results = query_to_do.get()
+    results = query_to_do.order_by("rating").get()
+
+    if len(results) == 0:
+        print("No movies found")
 
     for mov in results:
-        if list_all == []:
+        if return_col == []:
             print(mov._data)
         else:
-            for col in list_all:
-                print(mov._data[col])
+            for col in return_col:
+                print(mov._data[to_db_col_name[col]])
 
-phrase = "genre of Dinosaur Planet and release date of Dinosaur Planet" # and directed by Greta Gerwig"
-
-
-#keywords involing title input
-info = CaselessKeyword("info about")
-director_of = CaselessKeyword("director of")
-cast = CaselessKeyword("cast of")
-duration_of = CaselessKeyword("duration of")
-rating_of = CaselessKeyword("rating of")
-release_date = CaselessKeyword("release date of")
-movie_called = CaselessKeyword("movie called")
-genre_of = CaselessKeyword("genre of")
-
-#keywords involving rating
-rated_below = CaselessKeyword("rated below")
-rated_above = CaselessKeyword("rated above")
-
-#keywords for runtime
-shorter_than = CaselessKeyword("shorter than")
-longer_than = CaselessKeyword("longer than")
-
-#keywords for release date
-released_in = CaselessKeyword("released in")
-released_before = CaselessKeyword("released before")
-released_after = CaselessKeyword("released after")
-
-#keywords for specific attributes
-starring = CaselessKeyword("starring")
-directed_by = CaselessKeyword("directed by")
-genre_with = CaselessKeyword("with genre")
+while True:
+    phrase = input("Query: ")
 
 
-keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
-            | rated_below | rated_above | shorter_than | longer_than | released_in | released_before 
-            | released_after | starring | directed_by | genre_with)
+    #keywords involing title input
+    info = CaselessKeyword("info about")
+    director_of = CaselessKeyword("director of")
+    cast = CaselessKeyword("cast of")
+    duration_of = CaselessKeyword("duration of")
+    rating_of = CaselessKeyword("rating of")
+    release_date = CaselessKeyword("release date of")
+    movie_called = CaselessKeyword("movie called")
+    genre_of = CaselessKeyword("genre of")
 
-split_queries = phrase.split("and")
+    #keywords involving rating
+    rated_below = CaselessKeyword("rated below")
+    rated_above = CaselessKeyword("rated above")
 
-parse_input = keywords + OneOrMore(Word(alphanums))
+    #keywords for runtime
+    shorter_than = CaselessKeyword("shorter than")
+    longer_than = CaselessKeyword("longer than")
 
+    #keywords for release date
+    released_in = CaselessKeyword("released in")
+    released_before = CaselessKeyword("released before")
+    released_after = CaselessKeyword("released after")
 
-columns = []
-operators = []
-conditions = []
-list_all = []
-
-print(phrase)
-for query in split_queries:
-    temp = parse_input.parseString(query)
-    
-    
-    match temp[0]:
-        case "starring":
-            columns.append("cast")
-            operators.append("==")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-
-        case "movie called":
-            columns.append("movie_title")
-            operators.append("==")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-
-        case "directed by":
-            columns.append("director")
-            operators.append("==")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-
-        case "with genre":
-            columns.append("genre")
-            operators.append("array_contains")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-
-        case "genre of":
-            columns.append("movie_title")
-            operators.append("==")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-            list_all.append("genre")
-
-        case "release date of":
-            columns.append("movie_title")
-            operators.append("==")
-            str_name = ""
-            for i in range(1, len(temp)):
-                str_name += temp[i]
-                if i != len(temp) - 1:
-                    str_name += " "
-            conditions.append(str_name)
-            list_all.append("year")
+    #keywords for specific attributes
+    starring = CaselessKeyword("starring")
+    directed_by = CaselessKeyword("directed by")
+    genre_with = CaselessKeyword("with genre")
 
 
-# print(columns)
-# print(operators)
-# print(conditions)
+    keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
+                | rated_below | rated_above | shorter_than | longer_than | released_in | released_before 
+                | released_after | starring | directed_by | genre_with)
+
+    split_queries = phrase.split("and")
+
+    parse_input = keywords + OneOrMore(Word(alphanums))
 
 
-get_records(columns, operators, conditions, list_all)
+    columns = []
+    operators = []
+    conditions = []
+    return_cols = []
 
-    
 
-# parsed = shorter_than.parseString(phrase)
+    # Iterate through each query that was joined with an 'and'
+    for query in split_queries:
+        # Parse
+        cur_query = parse_input.parseString(query)
+        keyword = cur_query[0]
 
-# keyword_given = parsed[0]
+        # Make parsed condition into a str
+        cond = ""
+        for i in range(1, len(cur_query)):
+            cond += cur_query[i]
+            if i != len(cur_query) - 1:
+                cond += " "
+
+        # Match keyword and set proper conditions to return
+        match keyword:
+            # Inputs involving movie titles
+            case "info about" | "director of" | "cast of" | "duration of" | "rating of" | "release date of" | "movie called" | "genre of":
+                # Filter where movie_title == condition
+                columns.append("movie_title")
+                operators.append("==")
+                conditions.append(cond)
+
+                # Add column to return depending on the query
+                match keyword:
+                    case "director of":
+                        return_cols.append("director")
+                    case "cast of":
+                        return_cols.append("cast")
+                    case "duration of":
+                        return_cols.append("runtime")
+                    case "rating of":
+                        return_cols.append("rating")
+                    case "release date of":
+                        return_cols.append("release_date")
+                    case "genre of":
+                        return_cols.append("genre")
+
+            # Input involving ratings
+            case "rated below":
+                columns.append("rating")
+                operators.append("<")
+                # TODO convert to double and handle exceptions
+                conditions.append(float(cond))
+            case "rated above":
+                columns.append("rating")
+                operators.append(">")
+                # TODO convert to double and handle exceptions
+                conditions.append(float(cond))
+
+            # Input involving runtime
+            case "shorter than":
+                columns.append("runtime")
+                operators.append("<")
+                # TODO convert to double and handle exceptions
+                conditions.append(int(cond))
+            case "longer than":
+                columns.append("runtime")
+                operators.append(">")
+                # TODO convert to double and handle exceptions
+                conditions.append(int(cond))
+
+            # Inputs involving release dates
+            case "released in":
+                columns.append("release_date")
+                operators.append("==")
+                conditions.append(int(cond))
+            case "released before":
+                columns.append("release_date")
+                operators.append("<")
+                conditions.append(int(cond))
+            case "released after":
+                columns.append("release_date")
+                operators.append(">")
+                conditions.append(int(cond))
+                
+            # Inputs involving specific attributes
+            case "starring":
+                columns.append("cast")
+                operators.append("array_contains")
+                conditions.append(cond)
+            case "directed by":
+                columns.append("director")
+                operators.append("array_contains")
+                conditions.append(cond)
+            case "with genre":
+                columns.append("genre")
+                operators.append("array_contains")
+                conditions.append(cond)
+
+
+    get_records(columns, operators, conditions, return_cols)
+
 
 
