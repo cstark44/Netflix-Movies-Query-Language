@@ -26,8 +26,23 @@ def do_query(column: list[str], operation: list[str], condition: list[str], list
 
     results = query_to_do.get()
 
+     # if no movies are found
+    if not results:
+        print("No movies found.\n")
+        return
+
+    print("\n Movie Results \n" + "-" * 50)
+    # printing for movies found
+    # ex. if the director can't be found it will print N/A
     for mov in results:
-        print(mov._data)
+        data = mov.to_dict()
+        print(f" Title  : {data.get('title', 'N/A')}")
+        print(f" Director  : {data.get('director', 'N/A')}")
+        print(f" Genre  : {data.get('genre', 'N/A')}")
+        print(f" Release Date  : {data.get('year', 'N/A')}")
+        print(f" Rating  : {data.get('rating', 'N/A')}")
+        print(f" Runtime  : {data.get('runtime', 'N/A')}")
+        print(f" Cast  : {data.get('cast', 'N/A')}")
 
 col = ['movie_title', 'director']
 op = ['==', '==']
