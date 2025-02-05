@@ -29,13 +29,10 @@ release data of *title*
 
 directed by *director*
 starring *actor*
-rated above *num*
-rated below *num*
+
 with genre *genre*
-longer than *time* 
-shorter than *time*
-released before *year*
-released after  *year*
+
+
 released in *year*
 )
 '''
@@ -55,9 +52,9 @@ def get_records(column: list[str], operation: list[str], condition: list[str], r
     query_to_do = movies
     # For each query joined with an 'and', add another where clause
     for i in range(len(column)):
-        query_to_do = query_to_do.where(to_db_col_name[column[i]], operation[i], condition[i])
+        query_to_do = query_to_do.where(filter=FieldFilter(to_db_col_name[column[i]], operation[i], condition[i]))
 
-    results = query_to_do.order_by("rating").get()
+    results = query_to_do.get()
 
     if len(results) == 0:
         print("No movies found")
@@ -84,17 +81,13 @@ while True:
     genre_of = CaselessKeyword("genre of")
 
     #keywords involving rating
-    rated_below = CaselessKeyword("rated below")
-    rated_above = CaselessKeyword("rated above")
+    rated_at = CaselessKeyword("rated at")
 
     #keywords for runtime
-    shorter_than = CaselessKeyword("shorter than")
-    longer_than = CaselessKeyword("longer than")
+    length_of = CaselessKeyword("length_of")
 
     #keywords for release date
     released_in = CaselessKeyword("released in")
-    released_before = CaselessKeyword("released before")
-    released_after = CaselessKeyword("released after")
 
     #keywords for specific attributes
     starring = CaselessKeyword("starring")
@@ -103,8 +96,7 @@ while True:
 
 
     keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
-                | rated_below | rated_above | shorter_than | longer_than | released_in | released_before 
-                | released_after | starring | directed_by | genre_with)
+                | rated_at | length_of | released_in | starring | directed_by | genre_with)
 
     split_queries = phrase.split("and")
 
@@ -159,12 +151,12 @@ while True:
                 columns.append("rating")
                 operators.append("<")
                 # TODO convert to double and handle exceptions
-                conditions.append(float(cond))
+                conditions.append(int(cond))
             case "rated above":
                 columns.append("rating")
                 operators.append(">")
                 # TODO convert to double and handle exceptions
-                conditions.append(float(cond))
+                conditions.append(int(cond))
 
             # Input involving runtime
             case "shorter than":
