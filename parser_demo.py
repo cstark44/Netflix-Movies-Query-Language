@@ -16,6 +16,7 @@ Cols:
     Cast
     Rating
     Genre
+    Runtime
     Year
 
 info about *tile*
@@ -48,9 +49,9 @@ def get_records(column: list[str], operation: list[str], condition: list[str], r
     query_to_do = movies
     # For each query joined with an 'and', add another where clause
     for i in range(len(column)):
-        query_to_do = query_to_do.where(to_db_col_name[column[i]], operation[i], condition[i])
+        query_to_do = query_to_do.where(filter=FieldFilter(to_db_col_name[column[i]], operation[i], condition[i]))
 
-    results = query_to_do.order_by("rating").get()
+    results = query_to_do.get()
 
     if len(results) == 0:
         print("No movies found")
@@ -85,7 +86,7 @@ while True:
 
 
     keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
-                | released_in | starring | directed_by | genre_with)
+                | rated_at | length_of | released_in | starring | directed_by | genre_with)
 
     split_queries = phrase.split("and")
 
