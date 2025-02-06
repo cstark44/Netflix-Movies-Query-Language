@@ -16,7 +16,6 @@ Cols:
     Cast
     Rating
     Genre
-    Runtime
     Year
 
 info about *tile*
@@ -29,13 +28,7 @@ release data of *title*
 
 directed by *director*
 starring *actor*
-rated above *num*
-rated below *num*
 with genre *genre*
-longer than *time* 
-shorter than *time*
-released before *year*
-released after  *year*
 released in *year*
 )
 '''
@@ -72,7 +65,6 @@ def get_records(column: list[str], operation: list[str], condition: list[str], r
 while True:
     phrase = input("Query: ")
 
-
     #keywords involing title input
     info = CaselessKeyword("info about")
     director_of = CaselessKeyword("director of")
@@ -83,18 +75,8 @@ while True:
     movie_called = CaselessKeyword("movie called")
     genre_of = CaselessKeyword("genre of")
 
-    #keywords involving rating
-    rated_below = CaselessKeyword("rated below")
-    rated_above = CaselessKeyword("rated above")
-
-    #keywords for runtime
-    shorter_than = CaselessKeyword("shorter than")
-    longer_than = CaselessKeyword("longer than")
-
-    #keywords for release date
+    #keyword for release date
     released_in = CaselessKeyword("released in")
-    released_before = CaselessKeyword("released before")
-    released_after = CaselessKeyword("released after")
 
     #keywords for specific attributes
     starring = CaselessKeyword("starring")
@@ -103,8 +85,7 @@ while True:
 
 
     keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
-                | rated_below | rated_above | shorter_than | longer_than | released_in | released_before 
-                | released_after | starring | directed_by | genre_with)
+                | released_in | starring | directed_by | genre_with)
 
     split_queries = phrase.split("and")
 
@@ -115,12 +96,15 @@ while True:
     operators = []
     conditions = []
     return_cols = []
-
+    return_flag = 0
 
     # Iterate through each query that was joined with an 'and'
     for query in split_queries:
         # Parse
-        cur_query = parse_input.parseString(query)
+        try:
+            cur_query = parse_input.parseString(query)
+        except ParseException as e:
+            print(f"Error: Unable to parse query '{query}'. {str(e)}")
         keyword = cur_query[0]
 
         # Make parsed condition into a str
@@ -137,7 +121,11 @@ while True:
                 # Filter where movie_title == condition
                 columns.append("movie_title")
                 operators.append("==")
-                conditions.append(cond)
+                try:
+                    conditions.append(str(cond))
+                except ValueError:
+                    print("Value must be string. Input a movie title.")
+                    return_flag+1
 
                 # Add column to return depending on the query
                 match keyword:
@@ -154,57 +142,41 @@ while True:
                     case "genre of":
                         return_cols.append("genre")
 
-            # Input involving ratings
-            case "rated below":
-                columns.append("rating")
-                operators.append("<")
-                # TODO convert to double and handle exceptions
-                conditions.append(float(cond))
-            case "rated above":
-                columns.append("rating")
-                operators.append(">")
-                # TODO convert to double and handle exceptions
-                conditions.append(float(cond))
-
-            # Input involving runtime
-            case "shorter than":
-                columns.append("runtime")
-                operators.append("<")
-                # TODO convert to double and handle exceptions
-                conditions.append(int(cond))
-            case "longer than":
-                columns.append("runtime")
-                operators.append(">")
-                # TODO convert to double and handle exceptions
-                conditions.append(int(cond))
 
             # Inputs involving release dates
             case "released in":
                 columns.append("release_date")
                 operators.append("==")
-                conditions.append(int(cond))
-            case "released before":
-                columns.append("release_date")
-                operators.append("<")
-                conditions.append(int(cond))
-            case "released after":
-                columns.append("release_date")
-                operators.append(">")
-                conditions.append(int(cond))
-                
+                try:
+                    conditions.append(int(cond))
+                except ValueError:
+                    print("Value must be an integer. Input a year.")
+                    return_flag+1
             # Inputs involving specific attributes
             case "starring":
                 columns.append("cast")
                 operators.append("array_contains")
-                conditions.append(cond)
+                try:
+                    conditions.append(str(cond))
+                except ValueError:
+                    print("Value must be a name. Input an actor/actress.")
+                    return_flag+1
             case "directed by":
                 columns.append("director")
                 operators.append("array_contains")
-                conditions.append(cond)
+                try:
+                    conditions.append(str(cond))
+                except ValueError:
+                    print("Value must be a name. Input a director's name.")
+                    return_flag+1
             case "with genre":
                 columns.append("genre")
                 operators.append("array_contains")
-                conditions.append(cond)
+                try:
+                    conditions.append(str(cond))
+                except ValueError:
+                    print("Value must be a word. Input a genre.")
+                    return_flag+1
 
 
     get_records(columns, operators, conditions, return_cols)
