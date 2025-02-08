@@ -38,20 +38,28 @@ def get_records(column: list[str], operation: list[str], condition: list[str], r
     print("_______ GETTING RECORDS _______")
     print(column, operation, condition, return_cols)
     to_db_col_name = {
-        'movie_title' : 'title',
-        'director' : 'director',
-        'genre' : 'genre',
-        'release_date' : 'year',
-        'rating' : 'rating',
-        'runtime' : 'runtime',
-        'cast' : 'cast'
+        'movie_title' : 'TITLE',
+        'director' : 'DIRECTOR',
+        'genre' : 'GENRE',
+        'release_date' : 'YEAR',
+        'rating' : 'RATING',
+        'runtime' : 'RUNTIME',
+        'cast' : 'CAST'
     }
     query_to_do = movies
     # For each query joined with an 'and', add another where clause
     for i in range(len(column)):
         query_to_do = query_to_do.where(filter=FieldFilter(to_db_col_name[column[i]], operation[i], condition[i]))
+        results = query_to_do.get()
 
-    results = query_to_do.get()
+        # Multiple conditions
+        if (i > 0):
+            uuids = []
+            # Go through results and save each UUID
+            for mov in results:
+                uuids.append(mov._data["UUID"])
+            
+            query_to_do = movies.where(filter=FieldFilter("UUID", "in", uuids))
 
     if len(results) == 0:
         print("No movies found")
@@ -86,7 +94,7 @@ while True:
 
 
     keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
-                | rated_at | length_of | released_in | starring | directed_by | genre_with)
+                | released_in | starring | directed_by | genre_with)
 
     split_queries = phrase.split("and")
 
@@ -164,7 +172,7 @@ while True:
                     return_flag+1
             case "directed by":
                 columns.append("director")
-                operators.append("array_contains")
+                operators.append("==")
                 try:
                     conditions.append(str(cond))
                 except ValueError:
