@@ -11,12 +11,52 @@ app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 movies = db.collection("movies")
 
+def help():
+
+    while True:
+        print("--------------------------------------------------------------------------------")
+        print("                                  HELP MENU                                     ")
+        print("--------------------------------------------------------------------------------")
+        print("Use this tool to discover the perfect Netflix movie for your next movie night!\n"
+              "Simply combine any of the available keywords, and the database will find a match\n"
+              "to help you choose what to watch.")
+        print("Example Inputs:")
+        print("- Show me movies released in 2012.")
+        print("- Show me movies directed by Greta Gerwig and with\n"
+              "genre of comedy")
+        print("The keywords that can be used when typing in an input include:")
+        print("- info about")
+        print("- director of")
+        print("- cast of")
+        print("- duration of")
+        print("- rating of")
+        print("- release date of")
+        print("- movie called")
+        print("- genre of")
+        print("- released in")
+        print("- starring")
+        print("- directed by")
+        print("- with genre")
+        print("Type EXIT to exit the Help menu")
+
+        user_input = input("Enter 'EXIT' to leave the help menu: ")
+
+        if user_input == "EXIT":
+            print("Returning to query\n")
+            break
+
 # function: user_query
 # - asks user to enter a query
 # - stores input as 'query'
 def user_query():
-    query = input("Enter query: ")
-    return query
+    while True:
+        print("Enter 'Help' to get an explanation of this program")
+        query = input("Enter query: ")
+
+        if query == "Help":
+            help()
+        else:
+            return query
 
 # function: parse_input
 # - takes in user_input
