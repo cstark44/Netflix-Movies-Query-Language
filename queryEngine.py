@@ -23,7 +23,7 @@ def help():
         print("Example Inputs:")
         print("- movies released in 2012.")
         print("- movies directed by Tim Burton and with\n"
-              "genre of comedy")
+              "genre comedy")
         print("The keywords that can be used when typing in an input include:")
         print("- info about")
         print("- director of")
