@@ -217,6 +217,9 @@ def print_results(results):
     print("\n Movie Results \n" + "-" * 50)
     # printing for movies found
     # ex. if the director can't be found it will print N/A
+    if not results:
+        print("No movies found!")
+        return
     for mov in results:
         data = mov.to_dict()
         print(f" Title         : {data.get('TITLE', 'N/A')}")
