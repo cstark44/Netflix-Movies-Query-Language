@@ -113,7 +113,7 @@ while True:
         try:
             cur_query = parse_input.parseString(query)
         except ParseException as e:
-            print(f"Error: Unable to parse query '{query}'. {str(e)}")
+            print(f"Error: Unable to parse query '{query}'. Type 'Help' for more options.")
         keyword = cur_query[0]
 
         # Make parsed condition into a str
