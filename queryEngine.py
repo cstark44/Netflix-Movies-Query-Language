@@ -220,7 +220,7 @@ def print_results(results):
     if not results:
         print("No movies found!")
         return
-    for mov in results:
+    for i, mov in enumerate(results):
         data = mov.to_dict()
         print(f" Title         : {data.get('TITLE', 'N/A')}")
         print(f" Director      : {data.get('DIRECTOR', 'N/A')}")
