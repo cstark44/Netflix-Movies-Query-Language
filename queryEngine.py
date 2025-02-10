@@ -227,6 +227,9 @@ def print_results(results):
         print(f" Runtime       : {data.get('RUNTIME', 'N/A')}")
         print(f" Cast          : {data.get('CAST', 'N/A')}")
 
+        if i < len(results) - 1:
+            print("\n")
+
 # this might not be needed/ not totally sure if firestore does this
 # function: run_query_engine
 # - while true loop
