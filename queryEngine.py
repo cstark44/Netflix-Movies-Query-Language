@@ -37,7 +37,7 @@ def help():
         print("- starring")
         print("- directed by")
         print("- with genre")
-        print("Type EXIT to exit the Help menu")
+        print("Type EXIT to exit the Help menu or the query engine")
 
         user_input = input("Enter 'EXIT' to leave the help menu: ")
 
@@ -50,7 +50,7 @@ def help():
 # - stores input as 'query'
 def user_query():
     while True:
-        print("Enter 'Help' to get an explanation of this program")
+        print("\nEnter 'Help' to get an explanation of this program")
         query = input("Enter query: ")
 
         if query == "Help":
@@ -102,7 +102,7 @@ def parse_input(user_input):
         try:
             cur_query = parse_input.parseString(query)
         except ParseException as e:
-            print(f"Error: Unable to parse query '{query}'. {str(e)}")
+            print(f"Error: Unable to parse query '{query}'. Type 'Help' for more options.")
             return [], [], [], [], 1
 
         keyword = cur_query[0]
@@ -213,25 +213,38 @@ def get_records(columnQuerying, operator, criteria, return_cols):
     return results
 
 # function: print_results
-def print_results(results):
-    print("\n Movie Results \n" + "-" * 50)
-    # printing for movies found
-    # ex. if the director can't be found it will print N/A
+def print_results(results, return_cols):
+    to_db_col_name = {
+        'movie_title' : 'TITLE',
+        'director' : 'DIRECTOR',
+        'genre' : 'GENRE',
+        'release_date' : 'YEAR',
+        'rating' : 'RATING',
+        'runtime' : 'RUNTIME',
+        'cast' : 'CAST'
+    }
     if not results:
-        print("No movies found!")
-        return
-    for i, mov in enumerate(results):
-        data = mov.to_dict()
-        print(f" Title         : {data.get('TITLE', 'N/A')}")
-        print(f" Director      : {data.get('DIRECTOR', 'N/A')}")
-        print(f" Genre         : {data.get('GENRE', 'N/A')}")
-        print(f" Release Date  : {data.get('YEAR', 'N/A')}")
-        print(f" Rating        : {data.get('RATING', 'N/A')}")
-        print(f" Runtime       : {data.get('RUNTIME', 'N/A')}")
-        print(f" Cast          : {data.get('CAST', 'N/A')}")
+            print("No movies found!")
+            return
+    if (return_cols != []):
+        for col in return_cols:
+            print(results[0].to_dict().get(to_db_col_name[col], 'N/A'))
+    else:
+        print("\n Movie Results \n" + "-" * 50)
+        # printing for movies found
+        # ex. if the director can't be found it will print N/A
+        for i, mov in enumerate(results):
+            data = mov.to_dict()
+            print(f" Title         : {data.get('TITLE', 'N/A')}")
+            print(f" Director      : {data.get('DIRECTOR', 'N/A')}")
+            print(f" Genre         : {data.get('GENRE', 'N/A')}")
+            print(f" Release Date  : {data.get('YEAR', 'N/A')}")
+            print(f" Rating        : {data.get('RATING', 'N/A')}")
+            print(f" Runtime       : {data.get('RUNTIME', 'N/A')}")
+            print(f" Cast          : {data.get('CAST', 'N/A')}")
 
-        if i < len(results) - 1:
-            print("\n")
+            if i < len(results) - 1:
+                print("\n")
 
 # this might not be needed/ not totally sure if firestore does this
 # function: run_query_engine
@@ -245,8 +258,8 @@ def main():
         # Get user query
         query = user_query().rstrip()
 
-        if query == "quit":
-            print("Quitting query engine")
+        if query == "EXIT":
+            print("Exiting query engine")
             break
 
         # Parse
@@ -257,7 +270,7 @@ def main():
             results = get_records(columnQuerying, operator, criteria, return_cols)
 
             # Temp print
-            print_results(results)
+            print_results(results, return_cols)
 
 main()
 
