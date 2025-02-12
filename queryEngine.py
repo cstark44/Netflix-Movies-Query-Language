@@ -85,9 +85,9 @@ def parse_input(user_input):
     keywords = (info | director_of | cast | duration_of | rating_of | release_date | movie_called | genre_of 
                 | released_in | starring | directed_by | genre_with)
 
-    split_queries = user_input.split("and")
+    split_queries = user_input.split("AND")
 
-    parse_input = keywords + OneOrMore(Word(alphanums + "'"))
+    parse_input = keywords + OneOrMore(Word(alphanums + "'" + "," + "-" + "!" + "?" + "."))
 
     # Set up return vars
     columns = []
