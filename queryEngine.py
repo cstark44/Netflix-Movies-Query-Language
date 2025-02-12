@@ -21,9 +21,9 @@ def help():
               "Simply combine any of the available keywords, and the database will find a match\n"
               "to help you choose what to watch.")
         print("Example Inputs:")
-        print("- movies released in 2012.")
-        print("- movies directed by Tim Burton and with\n"
-              "genre comedy")
+        print("- released in 2012.")
+        print("- directed by Tim Burton and with\n"
+              "genre Comedy")
         print("The keywords that can be used when typing in an input include:")
         print("- info about")
         print("- director of")
@@ -87,7 +87,7 @@ def parse_input(user_input):
 
     split_queries = user_input.split("and")
 
-    parse_input = keywords + OneOrMore(Word(alphanums))
+    parse_input = keywords + OneOrMore(Word(alphanums + "'"))
 
     # Set up return vars
     columns = []
@@ -125,7 +125,7 @@ def parse_input(user_input):
                     conditions.append(str(cond))
                 except ValueError:
                     print("Value must be string. Input a movie title.")
-                    return_flag+1
+                    return_flag+=1
 
                 # Add column to return depending on the query
                 match keyword:
@@ -151,7 +151,7 @@ def parse_input(user_input):
                     conditions.append(int(cond))
                 except ValueError:
                     print("Value must be an integer. Input a year.")
-                    return_flag+1
+                    return_flag+=1
             # Inputs involving specific attributes
             case "starring":
                 columns.append("cast")
@@ -160,7 +160,7 @@ def parse_input(user_input):
                     conditions.append(str(cond))
                 except ValueError:
                     print("Value must be a name. Input an actor/actress.")
-                    return_flag+1
+                    return_flag+=1
             case "directed by":
                 columns.append("director")
                 operators.append("==")
@@ -168,7 +168,7 @@ def parse_input(user_input):
                     conditions.append(str(cond))
                 except ValueError:
                     print("Value must be a name. Input a director's name.")
-                    return_flag+1
+                    return_flag+=1
             case "with genre":
                 columns.append("genre")
                 operators.append("array_contains")
@@ -176,7 +176,7 @@ def parse_input(user_input):
                     conditions.append(str(cond))
                 except ValueError:
                     print("Value must be a word. Input a genre.")
-                    return_flag+1
+                    return_flag+=1
     
     # Return
     return columns, operators, conditions, return_cols, return_flag
@@ -201,7 +201,7 @@ def get_records(columnQuerying, operator, criteria, return_cols):
         results = query_to_do.get()
 
         # Multiple conditions
-        if (i > 0):
+        if (len(columnQuerying) > 1):
             uuids = []
             # Go through results and save each UUID
             for mov in results:
@@ -246,13 +246,8 @@ def print_results(results, return_cols):
             if i < len(results) - 1:
                 print("\n")
 
-# this might not be needed/ not totally sure if firestore does this
-# function: run_query_engine
-# - while true loop
-# - calls user_query, parse_input, get_records
-# - prints results
-#def run_query_engine():
-
+# function: main
+# calls other functions in a while true loop
 def main():
     while True:
         # Get user query
