@@ -37,6 +37,7 @@ def help():
         print("- starring")
         print("- directed by")
         print("- with genre")
+        print("Use the word 'AND' to combine two conditions")
         print("Type EXIT to exit the Help menu or the query engine")
 
         user_input = input("Enter 'EXIT' to leave the help menu: ")
@@ -51,6 +52,7 @@ def help():
 def user_query():
     while True:
         print("\nEnter 'Help' to get an explanation of this program")
+        print("\nCombine two conditions with the word 'AND'")
         query = input("Enter query: ")
 
         if query == "Help":
