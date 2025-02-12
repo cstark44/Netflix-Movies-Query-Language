@@ -52,7 +52,7 @@ def help():
 def user_query():
     while True:
         print("\nEnter 'Help' to get an explanation of this program")
-        print("\nCombine two conditions with the word 'AND'")
+        print("Combine two conditions with the word 'AND'")
         query = input("Enter query: ")
 
         if query == "Help":
