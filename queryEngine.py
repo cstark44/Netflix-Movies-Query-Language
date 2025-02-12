@@ -21,7 +21,7 @@ def help():
               "Simply combine any of the available keywords, and the database will find a match\n"
               "to help you choose what to watch.")
         print("Example Inputs:")
-        print("- released in 2012.")
+        print("- released in 2012")
         print("- directed by Tim Burton and with\n"
               "genre Comedy")
         print("The keywords that can be used when typing in an input include:")
